@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
 import { makeJoinClassname } from "../libs/utils";
 
 interface LayoutProps {
@@ -19,6 +20,7 @@ export default function Layout({
   const onGoBackClick = () => {
     router.back();
   };
+
   return (
     <div>
       <div className="fixed top-0 flex w-full max-w-xl items-center  justify-between border-b bg-white px-5 py-3 text-lg font-medium text-gray-800">
@@ -45,13 +47,20 @@ export default function Layout({
         {title ? <span>{title}</span> : null}
         <div />
       </div>
-      <div className={makeJoinClassname("pt-16", hasTabBar ? "pb-16" : "")}>
+      <div className={makeJoinClassname("pt-16", hasTabBar ? "pb-24" : "")}>
         {children}
       </div>
       {hasTabBar ? (
         <nav className="fixed bottom-0 flex w-full max-w-xl items-center justify-between border-t bg-white px-10 py-3 text-xs text-gray-700">
           <Link href="/">
-            <a className="flex flex-col items-center space-y-2">
+            <a
+              className={makeJoinClassname(
+                "flex flex-col items-center space-y-2",
+                router.pathname === "/"
+                  ? "text-orange-500"
+                  : "transition-colors hover:text-gray-500"
+              )}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6"
@@ -70,7 +79,14 @@ export default function Layout({
             </a>
           </Link>
           <Link href="/community">
-            <a className="flex flex-col items-center space-y-2">
+            <a
+              className={makeJoinClassname(
+                "flex flex-col items-center space-y-2",
+                router.pathname === "/community"
+                  ? "text-orange-500"
+                  : "transition-colors hover:text-gray-500"
+              )}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6"
@@ -88,8 +104,15 @@ export default function Layout({
               <span>동네소식</span>
             </a>
           </Link>
-          <Link href="chats">
-            <a className="flex flex-col items-center space-y-2">
+          <Link href="/chats">
+            <a
+              className={makeJoinClassname(
+                "flex flex-col items-center space-y-2",
+                router.pathname === "/chats"
+                  ? "text-orange-500"
+                  : "transition-colors hover:text-gray-500"
+              )}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6"
@@ -108,7 +131,14 @@ export default function Layout({
             </a>
           </Link>
           <Link href="/lives">
-            <a className="flex flex-col items-center space-y-2">
+            <a
+              className={makeJoinClassname(
+                "flex flex-col items-center space-y-2",
+                router.pathname === "/lives"
+                  ? "text-orange-500"
+                  : "transition-colors hover:text-gray-500"
+              )}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6"
@@ -127,7 +157,14 @@ export default function Layout({
             </a>
           </Link>
           <Link href="/profile">
-            <a className="flex flex-col items-center space-y-2">
+            <a
+              className={makeJoinClassname(
+                "flex flex-col items-center space-y-2",
+                router.pathname === "/profile"
+                  ? "text-orange-500"
+                  : "transition-colors hover:text-gray-500"
+              )}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6"

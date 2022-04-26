@@ -1,29 +1,30 @@
 import type { NextPage } from "next";
 import Layout from "../../components/layout";
+import TextArea from "../../components/textarea";
 
 const CommunityPostDetail: NextPage = () => {
   return (
     <Layout title="Q. What is the best mandu restaurant?" hasTabBar isGoBack>
-      <div className="">
-        <span className="my my-2.5 ml-4 inline-flex cursor-pointer items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800 ">
+      <div>
+        <span className="my-3 ml-4 inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800">
           동네질문
         </span>
-        <div className="mb-3 flex items-center space-x-3 border-b py-3 px-4">
-          <div className="h-10 w-10 cursor-pointer rounded-full bg-slate-300 " />
-          <div className="cursor-pointer ">
-            <p className="font-demidum text-sm text-gray-700">Steve Jebs</p>
+        <div className="mb-3 flex cursor-pointer items-center space-x-3  border-b px-4 pb-3">
+          <div className="h-10 w-10 rounded-full bg-slate-300" />
+          <div>
+            <p className="text-sm font-medium text-gray-700">Steve Jebs</p>
             <p className="text-xs font-medium text-gray-500">
               View profile &rarr;
             </p>
           </div>
         </div>
         <div>
-          <div className="mt-2 cursor-pointer px-4 text-gray-700 ">
+          <div className="mt-2 px-4 text-gray-700">
             <span className="font-medium text-orange-500">Q.</span> What is the
             best mandu restaurant?
           </div>
-          <div className="mt-3 flex w-full space-x-5 border-t border-b py-2.5 px-4 text-gray-700">
-            <span className="flex cursor-pointer items-center space-x-2 text-sm ">
+          <div className="mt-3 flex w-full space-x-5 border-t border-b px-4 py-2.5  text-gray-700">
+            <span className="flex items-center space-x-2 text-sm">
               <svg
                 className="h-4 w-4"
                 fill="none"
@@ -40,7 +41,7 @@ const CommunityPostDetail: NextPage = () => {
               </svg>
               <span>궁금해요 1</span>
             </span>
-            <span className="flex cursor-pointer items-center space-x-2 text-sm ">
+            <span className="flex items-center space-x-2 text-sm">
               <svg
                 className="h-4 w-4"
                 fill="none"
@@ -66,7 +67,7 @@ const CommunityPostDetail: NextPage = () => {
               <span className="block text-sm font-medium text-gray-700">
                 Steve Jebs
               </span>
-              <span className="block text-xs text-gray-500">2시간 전</span>
+              <span className="block text-xs text-gray-500 ">2시간 전</span>
               <p className="mt-2 text-gray-700">
                 The best mandu restaurant is the one next to my house.
               </p>
@@ -74,13 +75,12 @@ const CommunityPostDetail: NextPage = () => {
           </div>
         </div>
         <div className="px-4">
-          <textarea
-            id="description"
-            rows={4}
-            className="mt-1 w-full resize-none rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500"
+          <TextArea
+            name="description"
             placeholder="Answer this question!"
+            required
           />
-          <button className="mt-2 w-full rounded-md border border-transparent bg-orange-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2">
+          <button className="mt-2 w-full rounded-md border border-transparent bg-orange-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 ">
             Reply
           </button>
         </div>
