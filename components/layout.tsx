@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import { makeJoinClassname } from "../libs/utils";
+import { makeJoinClassname } from "../libs/client/utils";
 
 interface LayoutProps {
   title?: string;

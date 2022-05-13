@@ -1,13 +1,34 @@
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import Button from "../components/button";
 import Input from "../components/input";
 import Layout from "../components/layout";
-import { makeJoinClassname } from "../libs/utils";
+import useMutation from "../libs/client/useMutation";
+import { makeJoinClassname } from "../libs/client/utils";
+
+interface EnterForm {
+  email?: string;
+  phone?: string;
+}
 
 export default function Enter() {
+  const [enter, { loading, data, error }] = useMutation("/api/users/enter");
+  const [submitting, setSubmitting] = useState(false);
+  const { register, reset, handleSubmit } = useForm<EnterForm>();
   const [method, setMethod] = useState<"email" | "phone">("email");
-  const onEmailClick = () => setMethod("email");
-  const onPhoneClick = () => setMethod("phone");
+  const onEmailClick = () => {
+    reset();
+    setMethod("email");
+  };
+  const onPhoneClick = () => {
+    reset();
+    setMethod("phone");
+  };
+  const onValid = (validForm: EnterForm) => {
+    enter(validForm);
+  };
+
+  console.log(loading, data, error);
   return (
     <Layout title="로그인">
       <div className="px-4">
@@ -40,12 +61,22 @@ export default function Enter() {
               </button>
             </div>
           </div>
-          <form className="mt-8 flex flex-col space-y-4">
+          <form
+            onSubmit={handleSubmit(onValid)}
+            className="mt-8 flex flex-col space-y-4"
+          >
             {method === "email" ? (
-              <Input name="email" label="Email address" type="email" required />
+              <Input
+                register={register("email", { required: true })}
+                name="email"
+                label="Email address"
+                type="email"
+                required
+              />
             ) : null}
             {method === "phone" ? (
               <Input
+                register={register("phone", { required: true })}
                 name="phone"
                 label="Phone number"
                 type="number"
@@ -53,9 +84,11 @@ export default function Enter() {
                 required
               />
             ) : null}
-            {method === "email" ? <Button text={"Get login link"} /> : null}
+            {method === "email" ? (
+              <Button text={submitting ? "Loading" : "Get login link"} />
+            ) : null}
             {method === "phone" ? (
-              <Button text={"Get one-time password"} />
+              <Button text={submitting ? "Loading" : "Get one-time password"} />
             ) : null}
           </form>
           <div className="mt-8">

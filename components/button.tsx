@@ -1,4 +1,4 @@
-import { makeJoinClassname } from "../libs/utils";
+import { makeJoinClassname } from "../libs/client/utils";
 
 interface ButtonProps {
   large?: boolean;
