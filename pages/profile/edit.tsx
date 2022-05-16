@@ -2,8 +2,11 @@ import type { NextPage } from "next";
 import Button from "@components/button";
 import Input from "@components/input";
 import Layout from "@components/layout";
+import { useForm } from "react-hook-form";
 
 const EditProfile: NextPage = () => {
+  const { register } = useForm();
+
   return (
     <Layout title="프로필 수정" isGoBack>
       <form className="space-y-4 py-3 px-4">
@@ -22,13 +25,20 @@ const EditProfile: NextPage = () => {
             />
           </label>
         </div>
-        <Input required label="Email address" name="email" type="email" />
         <Input
+          register={register("email")}
+          label="Email address"
+          name="email"
+          type="email"
           required
+        />
+        <Input
+          register={register("phone")}
           label="Phone number"
           name="phone"
           type="number"
           kind="phone"
+          required
         />
         <Button text="Update profile" />
       </form>

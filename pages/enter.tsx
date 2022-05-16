@@ -25,6 +25,7 @@ export default function Enter() {
     setMethod("phone");
   };
   const onValid = (validForm: EnterForm) => {
+    if (loading) return;
     enter(validForm);
   };
 
