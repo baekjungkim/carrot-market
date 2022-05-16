@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Button from "@components/button";
 import Input from "@components/input";
 import Layout from "@components/layout";
 import useMutation from "@libs/client/useMutation";
 import { makeJoinClassname } from "@libs/client/utils";
+import Router, { useRouter } from "next/router";
 
 interface EnterForm {
   email?: string;
@@ -46,6 +47,13 @@ export default function Enter() {
     if (tokenLoading) return;
     confirmToken(validForm);
   };
+
+  const router = useRouter();
+  useEffect(() => {
+    if (tokenData?.ok) {
+      router.push("/");
+    }
+  }, [tokenData, router]);
 
   return (
     <Layout title="로그인">
