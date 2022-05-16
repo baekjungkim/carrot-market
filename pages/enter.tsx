@@ -29,7 +29,6 @@ export default function Enter() {
     enter(validForm);
   };
 
-  console.log(loading, data, error);
   return (
     <Layout title="로그인">
       <div className="px-4">
