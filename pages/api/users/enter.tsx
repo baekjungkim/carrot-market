@@ -13,7 +13,7 @@ async function handler(
   res: NextApiResponse<ResponseType>
 ) {
   const { phone, email } = req.body;
-  const user = phone ? { phone: +phone } : email ? { email } : null;
+  const user = phone ? { phone } : email ? { email } : null;
   if (!user) res.status(400).json({ ok: false });
   const payload = Math.floor(100000 + Math.random() * 900000) + "";
   const token = await client.token.create({
@@ -33,21 +33,21 @@ async function handler(
     },
   });
   if (phone) {
-    const message = await twilioClient.messages.create({
-      messagingServiceSid: process.env.TWILIO_MSID,
-      to: process.env.MY_PHONE!,
-      body: `Your login token is ${payload}`,
-    });
-    console.log(message);
+    // const message = await twilioClient.messages.create({
+    //   messagingServiceSid: process.env.TWILIO_MSID,
+    //   to: process.env.MY_PHONE!,
+    //   body: `Your login token is ${payload}`,
+    // });
+    // console.log(message);
   } else if (email) {
-    const email = await mail.send({
-      from: "zvgandam@gmail.com", // 인증했던 이메일
-      to: "zvgandam@gmail.com",
-      subject: "Your Carrot Market Verification Email",
-      text: `Your token is ${payload}`,
-      html: `Your token is <strong>${payload}</strong>`,
-    });
-    console.log(email);
+    // const email = await mail.send({
+    //   from: "zvgandam@gmail.com", // 인증했던 이메일
+    //   to: "zvgandam@gmail.com",
+    //   subject: "Your Carrot Market Verification Email",
+    //   text: `Your token is ${payload}`,
+    //   html: `Your token is <strong>${payload}</strong>`,
+    // });
+    // console.log(email);
   }
 
   return res.json({
