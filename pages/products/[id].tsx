@@ -13,6 +13,7 @@ interface ProductWithUser extends Product {
 interface ItemDetailResponse {
   ok: boolean;
   product: ProductWithUser;
+  relatedProducts: Product[];
 }
 
 const ItemDetail: NextPage = () => {
@@ -95,12 +96,16 @@ const ItemDetail: NextPage = () => {
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Similar items</h2>
           <div className="mt-6 grid grid-cols-2 gap-4">
-            {[1, 2, 3, 4, 5, 6].map((_, i) => (
-              <div key={i}>
-                <div className="mb-3 h-56 w-full bg-slate-300" />
-                <h3 className="-mb-1 text-gray-700">Galaxy S60</h3>
-                <span className="font-demidum text-sm text-gray-900">$6</span>
-              </div>
+            {data?.relatedProducts?.map((product) => (
+              <Link href={`/products/${product.id}`} key={product.id}>
+                <a>
+                  <div className="mb-3 h-56 w-full bg-slate-300" />
+                  <h3 className="-mb-1 text-gray-700">{product.name}</h3>
+                  <span className="font-demidum text-sm text-gray-900">
+                    {product.price} 원
+                  </span>
+                </a>
+              </Link>
             ))}
           </div>
         </div>
