@@ -9,6 +9,7 @@ async function handler(
 ) {
   const {
     query: { id },
+    session: { user },
   } = req;
 
   const product = await client.product.findUnique({
@@ -43,7 +44,23 @@ async function handler(
     },
   });
 
-  res.json({ ok: true, product, relatedProducts });
+  const isFavorite = Boolean(
+    await client.favorite.findFirst({
+      where: {
+        userId: user?.id,
+        productId: product?.id,
+      },
+      select: {
+        id: true,
+      },
+    })
+  );
+  res.json({
+    ok: true,
+    product,
+    relatedProducts,
+    isFavorite,
+  });
 }
 
 export default withApiSession(withHandler({ methods: ["GET"], handler }));
