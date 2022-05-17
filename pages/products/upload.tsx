@@ -3,8 +3,11 @@ import Button from "@components/button";
 import Input from "@components/input";
 import Layout from "@components/layout";
 import TextArea from "@components/textarea";
+import { useForm } from "react-hook-form";
 
 const Upload: NextPage = () => {
+  const { register } = useForm();
+
   return (
     <Layout title="상품 등록" isGoBack>
       <form className="space-y-4 p-4">
@@ -27,8 +30,15 @@ const Upload: NextPage = () => {
             <input className="hidden" type="file" />
           </label>
         </div>
-        <Input required label="Name" name="name" type="text" />
         <Input
+          register={register("name")}
+          required
+          label="Name"
+          name="name"
+          type="text"
+        />
+        <Input
+          register={register("price")}
           required
           label="Price"
           placeholder="0.00"
