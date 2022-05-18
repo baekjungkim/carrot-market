@@ -21,7 +21,7 @@ interface ItemDetailResponse {
 
 const ItemDetail: NextPage = () => {
   const router = useRouter();
-  const { data, error } = useSWR<ItemDetailResponse>(
+  const { data, error, mutate } = useSWR<ItemDetailResponse>(
     router.query.id ? `/api/products/${router.query.id}` : null
   );
   const isLoading = !data && !error;
@@ -30,7 +30,9 @@ const ItemDetail: NextPage = () => {
   );
 
   const onFavoriteClick = () => {
+    if (!data) return;
     toggleFavorite({});
+    mutate({ ...data, isFavorite: !data.isFavorite }, false);
   };
 
   return (
