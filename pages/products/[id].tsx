@@ -2,11 +2,12 @@ import { NextPage } from "next";
 import Button from "@components/button";
 import Layout from "@components/layout";
 import { useRouter } from "next/router";
-import useSWR from "swr";
+import useSWR, { useSWRConfig } from "swr";
 import { Product, User } from "@prisma/client";
 import Link from "next/link";
 import useMutation from "@libs/client/useMutation";
 import { makeJoinClassname } from "@libs/client/utils";
+import useUser from "@libs/client/useUser";
 
 interface ProductWithUser extends Product {
   user: User;
@@ -20,11 +21,17 @@ interface ItemDetailResponse {
 }
 
 const ItemDetail: NextPage = () => {
+  // const { user, isLoading } = useUser();
   const router = useRouter();
-  const { data, error, mutate } = useSWR<ItemDetailResponse>(
+  // const { mutate } = useSWRConfig();
+  const {
+    data,
+    error,
+    mutate: itemDetailMutate,
+  } = useSWR<ItemDetailResponse>(
     router.query.id ? `/api/products/${router.query.id}` : null
   );
-  const isLoading = !data && !error;
+  const isDataLoading = !data && !error;
   const [toggleFavorite] = useMutation(
     `/api/products/${router.query.id}/favorite`
   );
@@ -32,31 +39,37 @@ const ItemDetail: NextPage = () => {
   const onFavoriteClick = () => {
     if (!data) return;
     toggleFavorite({});
-    mutate({ ...data, isFavorite: !data.isFavorite }, false);
+    itemDetailMutate(
+      (prev) => prev && { ...prev, isFavorite: !prev.isFavorite },
+      false
+    );
+    // mutatee("/api/users/me", (prev: any) => ({ ok: !prev.ok }), false);
   };
 
   return (
     <Layout
-      title={isLoading ? "Loading..." : data?.product?.name}
+      title={isDataLoading ? "Loading..." : data?.product?.name}
       hasTabBar
       isGoBack
     >
       <div className="px-4 py-4">
         <div className="mb-5">
           <div
-            className={`h-96 bg-slate-300 ${isLoading ? "animate-pulse" : ""}`}
+            className={`h-96 bg-slate-300 ${
+              isDataLoading ? "animate-pulse" : ""
+            }`}
           />
           <div className="flex items-center space-x-3 border-b py-3">
             <div
               className={`h-12 w-12 cursor-pointer rounded-full bg-slate-300 ${
-                isLoading ? "animate-pulse" : ""
+                isDataLoading ? "animate-pulse" : ""
               }`}
             />
             <div className="cursor-pointer ">
               <p className="font-demidum text-sm text-gray-700">
-                {isLoading ? "Loading..." : data?.product?.user?.name}
+                {isDataLoading ? "Loading..." : data?.product?.user?.name}
               </p>
-              {isLoading ? null : (
+              {isDataLoading ? null : (
                 <Link href={`/users/profiles/${data?.product?.user?.id}`}>
                   <a className="text-xs font-medium text-gray-500">
                     View profile &rarr;
@@ -66,7 +79,7 @@ const ItemDetail: NextPage = () => {
             </div>
           </div>
           <div className="mt-5">
-            {isLoading ? (
+            {isDataLoading ? (
               <h1 className="my-6 text-3xl font-bold text-gray-900">
                 Loading...
               </h1>
