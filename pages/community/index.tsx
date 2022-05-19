@@ -6,6 +6,7 @@ import useSWR from "swr";
 import { Post, User } from "@prisma/client";
 import useUser from "@libs/client/useUser";
 import { makeJoinClassname } from "@libs/client/utils";
+import useCoords from "@libs/client/useCoords";
 
 interface PostWithUserAndCount extends Post {
   user: User;
@@ -21,8 +22,11 @@ interface PostsResponse {
 }
 
 const Community: NextPage = () => {
+  const { latitude, longitude } = useCoords();
   const { user } = useUser();
-  const { data, error } = useSWR<PostsResponse>("/api/posts");
+  const { data, error } = useSWR<PostsResponse>(
+    `/api/posts?latitude=${latitude}&longitude=${longitude}`
+  );
   const isLoading = !data && !error;
   return (
     <Layout title="동네소식" hasTabBar>

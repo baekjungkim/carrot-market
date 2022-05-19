@@ -8,7 +8,24 @@ async function handler(
   res: NextApiResponse<ResponseType>
 ) {
   if (req.method === "GET") {
+    const {
+      query: { latitude, longitude },
+    } = req;
+
+    const parseLatitude = parseFloat(latitude.toString());
+    const parseLongitude = parseFloat(longitude.toString());
+
     const posts = await client.post.findMany({
+      where: {
+        latitude: {
+          gte: parseLatitude - 0.01,
+          lte: parseLatitude + 0.01,
+        },
+        longitude: {
+          gte: parseLongitude - 0.01,
+          lte: parseLongitude + 0.01,
+        },
+      },
       include: {
         user: {
           select: {
