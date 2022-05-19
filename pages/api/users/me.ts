@@ -11,6 +11,13 @@ async function handler(
     where: {
       id: req.session.user?.id,
     },
+    include: {
+      curiosities: {
+        select: {
+          postId: true,
+        },
+      },
+    },
   });
   res.json({
     ok: true,
