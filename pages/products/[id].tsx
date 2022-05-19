@@ -59,25 +59,29 @@ const ItemDetail: NextPage = () => {
               isDataLoading ? "animate-pulse" : ""
             }`}
           />
-          <div className="flex items-center space-x-3 border-b py-3">
-            <div
-              className={`h-12 w-12 cursor-pointer rounded-full bg-slate-300 ${
-                isDataLoading ? "animate-pulse" : ""
-              }`}
-            />
-            <div className="cursor-pointer ">
-              <p className="font-demidum text-sm text-gray-700">
-                {isDataLoading ? "Loading..." : data?.product?.user?.name}
-              </p>
-              {isDataLoading ? null : (
-                <Link href={`/users/profiles/${data?.product?.user?.id}`}>
-                  <a className="text-xs font-medium text-gray-500">
-                    View profile &rarr;
-                  </a>
-                </Link>
-              )}
+          {isDataLoading ? (
+            <div className="flex items-center space-x-3 border-b py-3">
+              Loading...
             </div>
-          </div>
+          ) : (
+            <Link href={`/users/profiles/${data?.product?.user?.id}`}>
+              <a className="flex items-center space-x-3 border-b py-3">
+                <div
+                  className={`h-12 w-12 cursor-pointer rounded-full bg-slate-300 ${
+                    isDataLoading ? "animate-pulse" : ""
+                  }`}
+                />
+                <div className="cursor-pointer ">
+                  <p className="font-demidum text-sm text-gray-700">
+                    {data?.product?.user?.name}
+                  </p>
+                  <p className="text-xs font-medium text-gray-500">
+                    View profile &rarr;
+                  </p>
+                </div>
+              </a>
+            </Link>
+          )}
           <div className="mt-5">
             {isDataLoading ? (
               <h1 className="my-6 text-3xl font-bold text-gray-900">
