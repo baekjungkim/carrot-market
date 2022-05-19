@@ -27,6 +27,9 @@ async function handler(
     },
   });
 
+  if (!product)
+    return res.status(404).json({ ok: false, message: "Not found product" });
+
   const terms = product?.name.split(" ").map((word) => ({
     name: {
       contains: word,

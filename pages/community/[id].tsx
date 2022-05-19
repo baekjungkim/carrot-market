@@ -34,6 +34,7 @@ interface PostDetailResponse {
 interface AnswerForm {
   answer: string;
 }
+
 interface AnswerResponse {
   ok: boolean;
   answer: Answer;
@@ -41,16 +42,19 @@ interface AnswerResponse {
 
 const CommunityPostDetail: NextPage = () => {
   const router = useRouter();
-  const { register, handleSubmit } = useForm<AnswerForm>();
+  const { register, handleSubmit, reset } = useForm<AnswerForm>();
 
   const { data, error, mutate } = useSWR<PostDetailResponse>(
     router.query.id ? `/api/posts/${router.query.id}` : null
   );
   const isLoading = !data && !error;
 
-  const [toggleCuriosity] = useMutation(
+  const [toggleCuriosity, { loading: curiosityLoading }] = useMutation(
     `/api/posts/${router.query.id}/curiosity`
   );
+
+  const [sendAnswer, { data: answerData, loading: answerLoading }] =
+    useMutation<AnswerResponse>(`/api/posts/${router.query.id}/answer`);
 
   useEffect(() => {
     if (data && !data?.ok) {
@@ -76,10 +80,21 @@ const CommunityPostDetail: NextPage = () => {
       },
       false
     );
-    toggleCuriosity({});
+    if (!curiosityLoading) {
+      toggleCuriosity({});
+    }
   };
 
-  const onValid = (data: AnswerForm) => {};
+  const onValid = (form: AnswerForm) => {
+    if (answerLoading) return;
+    sendAnswer(form);
+  };
+
+  useEffect(() => {
+    if (answerData && answerData.ok) {
+      reset();
+    }
+  }, [answerData, reset]);
 
   return (
     <Layout
@@ -182,13 +197,13 @@ const CommunityPostDetail: NextPage = () => {
         </div>
         <form className="px-4" onSubmit={handleSubmit(onValid)}>
           <TextArea
-            register={register("answer", { required: true })}
+            register={register("answer", { required: true, minLength: 5 })}
             name="description"
             placeholder="Answer this question!"
             required
           />
           <button className="mt-2 w-full rounded-md border border-transparent bg-orange-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 ">
-            Reply
+            {answerLoading ? "Loading..." : "Reply"}
           </button>
         </form>
       </div>

@@ -18,9 +18,8 @@ async function handler(
     },
   });
 
-  if (!product) {
+  if (!product)
     return res.status(404).json({ ok: false, message: "Not found product" });
-  }
 
   const alreadyExists = await client.favorite.findFirst({
     where: {

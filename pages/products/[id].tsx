@@ -32,7 +32,7 @@ const ItemDetail: NextPage = () => {
     router.query.id ? `/api/products/${router.query.id}` : null
   );
   const isDataLoading = !data && !error;
-  const [toggleFavorite] = useMutation(
+  const [toggleFavorite, { loading: favoriteLoading }] = useMutation(
     `/api/products/${router.query.id}/favorite`
   );
 
@@ -42,7 +42,9 @@ const ItemDetail: NextPage = () => {
       (prev) => prev && { ...prev, isFavorite: !prev.isFavorite },
       false
     );
-    toggleFavorite({});
+    if (!favoriteLoading) {
+      toggleFavorite({});
+    }
     // mutatee("/api/users/me", (prev: any) => ({ ok: !prev.ok }), false);
   };
 
