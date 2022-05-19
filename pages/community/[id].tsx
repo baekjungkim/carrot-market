@@ -8,6 +8,8 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import useMutation from "@libs/client/useMutation";
 import { useEffect } from "react";
+import useUser from "@libs/client/useUser";
+import { makeJoinClassname } from "@libs/client/utils";
 
 interface AnswerWithUser extends Answer {
   user: User;
@@ -25,6 +27,7 @@ interface PostWithUserAndCount extends Post {
 interface PostDetailResponse {
   ok: boolean;
   post: PostWithUserAndCount;
+  isCuriosity: boolean;
   error?: string;
 }
 
@@ -39,23 +42,44 @@ interface AnswerResponse {
 const CommunityPostDetail: NextPage = () => {
   const router = useRouter();
   const { register, handleSubmit } = useForm<AnswerForm>();
-  const [writeAnswer, { data: answerData, loading }] =
-    useMutation<AnswerResponse>(`/api/posts/${router.query.id}/answer`);
 
-  const { data, error } = useSWR<PostDetailResponse>(
+  const { data, error, mutate } = useSWR<PostDetailResponse>(
     router.query.id ? `/api/posts/${router.query.id}` : null
   );
   const isLoading = !data && !error;
 
-  const onValid = (data: AnswerForm) => {
-    if (loading) return;
-  };
+  const [toggleCuriosity] = useMutation(
+    `/api/posts/${router.query.id}/curiosity`
+  );
 
   useEffect(() => {
     if (data && !data?.ok) {
       alert(data?.error);
     }
   }, [data]);
+
+  const onCuriosityClick = () => {
+    if (!data) return;
+    mutate(
+      {
+        ...data,
+        post: {
+          ...data.post,
+          _count: {
+            ...data.post._count,
+            curiosities: data?.isCuriosity
+              ? data?.post._count.curiosities - 1
+              : data?.post._count.curiosities + 1,
+          },
+        },
+        isCuriosity: !data.isCuriosity,
+      },
+      false
+    );
+    toggleCuriosity({});
+  };
+
+  const onValid = (data: AnswerForm) => {};
 
   return (
     <Layout
@@ -97,8 +121,14 @@ const CommunityPostDetail: NextPage = () => {
               </>
             )}
           </div>
-          <div className="mt-3 flex w-full space-x-5 border-t border-b px-4 py-2.5  text-gray-700">
-            <span className="flex items-center space-x-2 text-sm">
+          <div className="mt-3 flex w-full justify-start space-x-3 border-t border-b px-4 py-2.5 text-gray-700">
+            <button
+              onClick={onCuriosityClick}
+              className={makeJoinClassname(
+                "flex w-28 items-center space-x-2 text-sm",
+                data?.isCuriosity ? "text-orange-500" : ""
+              )}
+            >
               <svg
                 className="h-4 w-4"
                 fill="none"
@@ -114,7 +144,7 @@ const CommunityPostDetail: NextPage = () => {
                 ></path>
               </svg>
               <span>궁금해요 {data?.post?._count?.curiosities}</span>
-            </span>
+            </button>
             <span className="flex items-center space-x-2 text-sm">
               <svg
                 className="h-4 w-4"
@@ -150,7 +180,7 @@ const CommunityPostDetail: NextPage = () => {
             </div>
           ))}
         </div>
-        <div className="px-4">
+        <form className="px-4" onSubmit={handleSubmit(onValid)}>
           <TextArea
             register={register("answer", { required: true })}
             name="description"
@@ -160,7 +190,7 @@ const CommunityPostDetail: NextPage = () => {
           <button className="mt-2 w-full rounded-md border border-transparent bg-orange-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 ">
             Reply
           </button>
-        </div>
+        </form>
       </div>
     </Layout>
   );

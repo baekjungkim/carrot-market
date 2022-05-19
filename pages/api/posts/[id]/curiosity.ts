@@ -12,19 +12,18 @@ async function handler(
     session: { user },
   } = req;
 
-  const product = await client.product.findUnique({
+  const post = await client.post.findUnique({
     where: {
       id: +id.toString(),
     },
   });
 
-  if (!product) {
-    return res.status(404).json({ ok: false, message: "Not found product" });
-  }
+  if (!post)
+    return res.status(404).json({ ok: false, message: "Not found post" });
 
-  const alreadyExists = await client.favorite.findFirst({
+  const alreadyExists = await client.curiosity.findFirst({
     where: {
-      productId: product.id,
+      postId: post.id,
       userId: user?.id,
     },
     select: {
@@ -33,17 +32,17 @@ async function handler(
   });
 
   if (alreadyExists) {
-    await client.favorite.delete({
+    await client.curiosity.delete({
       where: {
         id: alreadyExists.id,
       },
     });
   } else {
-    await client.favorite.create({
+    await client.curiosity.create({
       data: {
-        product: {
+        post: {
           connect: {
-            id: product.id,
+            id: post.id,
           },
         },
         user: {

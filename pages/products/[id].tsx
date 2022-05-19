@@ -38,11 +38,11 @@ const ItemDetail: NextPage = () => {
 
   const onFavoriteClick = () => {
     if (!data) return;
-    toggleFavorite({});
     itemDetailMutate(
       (prev) => prev && { ...prev, isFavorite: !prev.isFavorite },
       false
     );
+    toggleFavorite({});
     // mutatee("/api/users/me", (prev: any) => ({ ok: !prev.ok }), false);
   };
 
