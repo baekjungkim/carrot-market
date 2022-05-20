@@ -5,15 +5,15 @@ import Layout from "@components/layout";
 import useUser from "@libs/client/useUser";
 import Head from "next/head";
 import useSWR from "swr";
-import { Product } from "@prisma/client";
+import { Product, Record } from "@prisma/client";
 
-interface ProductWithCount extends Product {
-  favorites: number;
+interface ProductWithRecords extends Product {
+  records: Record[];
 }
 
 interface ProductsResponse {
   ok: boolean;
-  products: ProductWithCount[];
+  products: ProductWithRecords[];
 }
 
 const Home: NextPage = () => {
@@ -32,7 +32,7 @@ const Home: NextPage = () => {
             title={product.name}
             price={product.price}
             comments={1}
-            hearts={product.favorites}
+            hearts={product.records.length}
           />
         ))}
 
