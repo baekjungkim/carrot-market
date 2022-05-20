@@ -26,7 +26,7 @@ export default function Item({
           </div>
         </div>
         <div className="flex items-end justify-end space-x-2">
-          <div className="flex items-center space-x-0.5 text-sm  text-gray-600">
+          <div className="flex w-12 items-center space-x-0.5  text-sm text-gray-600">
             <svg
               className="h-4 w-4"
               fill="none"

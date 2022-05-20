@@ -8,9 +8,7 @@ import useSWR from "swr";
 import { Product } from "@prisma/client";
 
 interface ProductWithCount extends Product {
-  _count: {
-    favorites: number;
-  };
+  favorites: number;
 }
 
 interface ProductsResponse {
@@ -34,7 +32,7 @@ const Home: NextPage = () => {
             title={product.name}
             price={product.price}
             comments={1}
-            hearts={product._count.favorites}
+            hearts={product.favorites}
           />
         ))}
 

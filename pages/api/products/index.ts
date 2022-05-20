@@ -8,15 +8,27 @@ async function handler(
   res: NextApiResponse<ResponseType>
 ) {
   if (req.method === "GET") {
-    const products = await client.product.findMany({
-      include: {
-        _count: {
-          select: {
-            favorites: true,
-          },
-        },
-      },
-    });
+    // const products = await client.product.findMany({
+    //   include: {
+    //     _count: {
+    //       select: {
+    //         records: true,
+    //       },
+    //     },
+    //   },
+    // });
+
+    const products = await client.$queryRaw`
+      SELECT Product.*, 
+            (
+              SELECT COUNT(*)
+                FROM Record
+               WHERE Record.productId = Product.id
+                 AND kind = 'Favorite'
+            ) as favorites
+        FROM Product    
+    `;
+
     res.json({
       ok: true,
       products,

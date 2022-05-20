@@ -48,10 +48,11 @@ async function handler(
   });
 
   const isFavorite = Boolean(
-    await client.favorite.findFirst({
+    await client.record.findFirst({
       where: {
         userId: user?.id,
         productId: product?.id,
+        kind: "Favorite",
       },
       select: {
         id: true,
