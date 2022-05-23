@@ -3,13 +3,67 @@ import Button from "@components/button";
 import Input from "@components/input";
 import Layout from "@components/layout";
 import { useForm } from "react-hook-form";
+import useUser from "@libs/client/useUser";
+import { useEffect } from "react";
+import useMutation from "@libs/client/useMutation";
+import Router, { useRouter } from "next/router";
+
+interface EditProfileForm {
+  name?: string;
+  email?: string;
+  phone?: string;
+  formErrors?: string;
+}
+
+interface EditProfileResponse {
+  ok: boolean;
+  error?: string;
+}
 
 const EditProfile: NextPage = () => {
-  const { register } = useForm();
+  const router = useRouter();
+  const { user } = useUser({});
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    setError,
+    clearErrors,
+    getValues,
+    watch,
+    formState: { errors },
+  } = useForm<EditProfileForm>({});
+
+  useEffect(() => {
+    if (user?.name) setValue("name", user?.name);
+    if (user?.email) setValue("email", user?.email);
+    if (user?.phone) setValue("phone", user?.phone);
+  }, [user, setValue]);
+
+  const [editProfile, { data, loading }] =
+    useMutation<EditProfileResponse>("/api/users/me");
+
+  const onValid = ({ name, email, phone }: EditProfileForm) => {
+    if (loading) return;
+
+    editProfile({ name, email, phone: phone + "" });
+  };
+
+  useEffect(() => {
+    if (data && !data.ok) {
+      return setError("formErrors", {
+        message: data.error,
+      });
+    } else if (data && data.ok) {
+      router.reload();
+    }
+  }, [data, setError, router]);
+
+  console.log(errors);
 
   return (
     <Layout title="프로필 수정" isGoBack>
-      <form className="space-y-4 py-3 px-4">
+      <form className="space-y-4 py-3 px-4" onSubmit={handleSubmit(onValid)}>
         <div className="flex items-center space-x-3">
           <div className="h-14 w-14 rounded-full bg-slate-500" />
           <label
@@ -26,21 +80,63 @@ const EditProfile: NextPage = () => {
           </label>
         </div>
         <Input
-          register={register("email")}
+          register={register("name", {
+            required: {
+              value: true,
+              message: "Username is Required.",
+            },
+          })}
+          label="Username"
+          name="name"
+          type="text"
+        />
+        {errors.name ? (
+          <span className="my-2 block font-medium text-red-500">
+            {errors.name.message}
+          </span>
+        ) : null}
+        <Input
+          register={register("email", {
+            validate: {
+              chooseOne: (v) => {
+                if (v !== "" || getValues().phone !== "") {
+                  clearErrors(["email", "phone"]);
+                  return true;
+                } else {
+                  return "Email OR Phone numebr are required. You need to choose one.";
+                }
+              },
+            },
+          })}
           label="Email address"
           name="email"
           type="email"
-          required
         />
         <Input
-          register={register("phone")}
+          register={register("phone", {
+            validate: {
+              chooseOne: (v) => {
+                if (v !== "" || getValues().email !== "") {
+                  clearErrors(["email", "phone"]);
+                  return true;
+                } else {
+                  return "Email OR Phone numebr are required. You need to choose one.";
+                }
+              },
+            },
+          })}
           label="Phone number"
           name="phone"
           type="number"
           kind="phone"
-          required
         />
-        <Button text="Update profile" />
+        {errors.email ? (
+          <span className="my-2 block font-medium text-red-500">
+            {errors.email.message}
+          </span>
+        ) : null}
+
+        <Button loading={loading} text={"Update profile"} />
       </form>
     </Layout>
   );

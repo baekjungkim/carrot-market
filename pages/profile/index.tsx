@@ -16,7 +16,7 @@ interface ReviewsResposne {
 }
 
 const Profile: NextPage = () => {
-  const { user } = useUser();
+  const { user } = useUser({});
   const { data, error } = useSWR<ReviewsResposne>("/api/users/reviews");
   const isLoading = !data && !error;
 
