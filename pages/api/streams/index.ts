@@ -10,7 +10,13 @@ async function handler(
   if (req.method === "GET") {
     const streams = await client.stream.findMany({
       include: {
-        user: true,
+        user: {
+          select: {
+            id: true,
+            avatar: true,
+            name: true,
+          },
+        },
       },
     });
     res.json({ ok: true, streams });

@@ -15,7 +15,25 @@ async function handler(
       id: +id.toString(),
     },
     include: {
-      user: true,
+      user: {
+        select: {
+          id: true,
+          avatar: true,
+          name: true,
+        },
+      },
+      messages: {
+        select: {
+          id: true,
+          message: true,
+          user: {
+            select: {
+              id: true,
+              avatar: true,
+            },
+          },
+        },
+      },
     },
   });
 
