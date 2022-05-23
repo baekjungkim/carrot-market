@@ -3,6 +3,7 @@ import { makeJoinClassname } from "@libs/client/utils";
 interface ButtonProps {
   large?: boolean;
   text: string;
+  loading?: boolean;
   [key: string]: any;
 }
 

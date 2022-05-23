@@ -130,11 +130,11 @@ export default function Layout({
               <span>채팅</span>
             </a>
           </Link>
-          <Link href="/lives">
+          <Link href="/streams">
             <a
               className={makeJoinClassname(
                 "flex flex-col items-center space-y-2",
-                router.pathname === "/lives"
+                router.pathname === "/streams"
                   ? "text-orange-500"
                   : "transition-colors hover:text-gray-500"
               )}

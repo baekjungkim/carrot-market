@@ -23,7 +23,7 @@ interface PostsResponse {
 
 const Community: NextPage = () => {
   const { latitude, longitude } = useCoords();
-  const { user } = useUser();
+  const { user } = useUser({});
   const { data, error } = useSWR<PostsResponse>(
     latitude && longitude
       ? `/api/posts?latitude=${latitude}&longitude=${longitude}`
