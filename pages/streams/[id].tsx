@@ -45,7 +45,7 @@ const StreamDetail: NextPage = () => {
   const { data, error, mutate } = useSWR<StreamDetailResponse>(
     router.query.id ? `/api/streams/${router.query.id}` : null,
     {
-      refreshInterval: 1000,
+      // refreshInterval: 1000, // fake realtime
     }
   );
   const isLoading = !data && !error;
@@ -88,7 +88,7 @@ const StreamDetail: NextPage = () => {
         } as any),
       false
     );
-    // sendMessage(form);
+    sendMessage(form);
   };
 
   return (
