@@ -23,47 +23,25 @@ async function handler(
           : "Purchase",
     },
     select: {
-      productId: true,
+      id: true,
+      product: {
+        include: {
+          records: {
+            select: {
+              id: true,
+            },
+            where: {
+              kind: "Favorite",
+            },
+          },
+        },
+      },
     },
   });
 
-  let products;
-  if (records.length > 0) {
-    const productIdArr = records?.map((record) => record.productId);
-    products = await client.product.findMany({
-      where: {
-        id: {
-          in: productIdArr,
-        },
-      },
-      include: {
-        records: {
-          select: {
-            id: true,
-          },
-          where: {
-            kind: "Favorite",
-          },
-        },
-      },
-    });
-
-    // products = await client.$queryRaw`
-    //   SELECT Product.*,
-    //         (
-    //           SELECT COUNT(*)
-    //             FROM Record
-    //            WHERE Record.productId = Product.id
-    //              AND kind = 'Favorite'
-    //         ) as favorites
-    //     FROM Product
-    //    WHERE id IN (${productIdArr.join()})
-    // `;
-  }
-
   res.json({
     ok: true,
-    products,
+    records,
   });
 }
 

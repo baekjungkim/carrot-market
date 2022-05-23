@@ -7,7 +7,7 @@ import Head from "next/head";
 import useSWR from "swr";
 import { Product, Record } from "@prisma/client";
 
-interface ProductWithRecords extends Product {
+export interface ProductWithRecords extends Product {
   records: Record[];
 }
 
