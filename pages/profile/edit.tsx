@@ -4,11 +4,13 @@ import Input from "@components/input";
 import Layout from "@components/layout";
 import { useForm } from "react-hook-form";
 import useUser from "@libs/client/useUser";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useMutation from "@libs/client/useMutation";
 import Router, { useRouter } from "next/router";
+import { makeJoinClassname } from "@libs/client/utils";
 
 interface EditProfileForm {
+  avatar?: FileList;
   name?: string;
   email?: string;
   phone?: string;
@@ -43,7 +45,7 @@ const EditProfile: NextPage = () => {
   const [editProfile, { data, loading }] =
     useMutation<EditProfileResponse>("/api/users/me");
 
-  const onValid = ({ name, email, phone }: EditProfileForm) => {
+  const onValid = ({ name, email, phone, avatar }: EditProfileForm) => {
     if (loading) return;
 
     editProfile({ name, email, phone: phone + "" });
@@ -59,20 +61,33 @@ const EditProfile: NextPage = () => {
     }
   }, [data, setError, router]);
 
-  console.log(errors);
+  const [avatarPreview, setAvatarPreview] = useState("");
+  const avatar = watch("avatar");
+  useEffect(() => {
+    if (avatar && avatar.length > 0) {
+      const avatarFile = avatar[0];
+      setAvatarPreview(URL.createObjectURL(avatarFile));
+    }
+  }, [avatar]);
 
   return (
     <Layout title="프로필 수정" isGoBack>
       <form className="space-y-4 py-3 px-4" onSubmit={handleSubmit(onValid)}>
         <div className="flex items-center space-x-3">
-          <div className="h-14 w-14 rounded-full bg-slate-500" />
+          {avatarPreview ? (
+            <img src={avatarPreview} className="h-14 w-14 rounded-full" />
+          ) : (
+            <div className="h-14 w-14 rounded-full bg-slate-500" />
+          )}
+
           <label
-            htmlFor="picture"
+            htmlFor="avatar"
             className="cursor-pointer rounded-md border border-gray-300 py-2 px-3 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
           >
             Change
             <input
-              id="picture"
+              {...register("avatar")}
+              id="avatar"
               type="file"
               className="hidden"
               accept="image/*"
