@@ -5,6 +5,8 @@ import Layout from "@components/layout";
 import useSWRInfinite, { SWRInfiniteKeyLoader } from "swr/infinite";
 import { Stream, User } from "@prisma/client";
 import Button from "@components/button";
+import { useInfiniteScroll } from "@libs/client/useInfiniteScroll";
+import { useEffect } from "react";
 
 interface StreamWithUser extends Stream {
   user: User;
@@ -13,17 +15,24 @@ interface StreamWithUser extends Stream {
 interface StreamsResponse {
   ok: boolean;
   streams: StreamWithUser[];
+  pages: number;
 }
 
 const PAGE_SIZE = 10;
+const getKey = (page: number, prevPageData: StreamsResponse) => {
+  // if (page !== 0 && page + 1 > prevPageData.pages) return null;
+  if (prevPageData && prevPageData.streams.length < PAGE_SIZE) return null; // reached the end
+  return `/api/streams?page=${page}&take=${PAGE_SIZE}`; // SWR key
+};
 
 const Streams: NextPage = () => {
-  const getKey: SWRInfiniteKeyLoader = (pageIndex, previousPageData) => {
-    if (previousPageData && previousPageData.length < PAGE_SIZE) return null; // reached the end
-    return `/api/streams?page=${pageIndex}&take=${PAGE_SIZE}`; // SWR key
-  };
-  const { data, size, setSize, error } =
-    useSWRInfinite<StreamsResponse>(getKey);
+  const { data, setSize } = useSWRInfinite<StreamsResponse>(getKey, {
+    revalidateFirstPage: false,
+  });
+  const page = useInfiniteScroll();
+  useEffect(() => {
+    setSize(page);
+  }, [page, setSize]);
 
   return (
     <Layout title="라이브" hasTabBar>
@@ -36,7 +45,7 @@ const Streams: NextPage = () => {
 
                 <div className="mt-2 flex justify-between space-x-3">
                   <h1 className="text-2xl font-bold text-gray-900">
-                    {stream.name}
+                    {stream.id}
                   </h1>
                   <div className="flex space-x-3">
                     <div className="h-8 w-8 rounded-full bg-slate-500" />
@@ -50,9 +59,9 @@ const Streams: NextPage = () => {
           ));
         })}
 
-        <div className="pt-10 pb-2">
+        {/* <div className="pt-10 pb-2">
           <Button onClick={() => setSize(size + 1)} text="Load More" />
-        </div>
+        </div> */}
 
         <FloatingButton href="/streams/create">
           <svg

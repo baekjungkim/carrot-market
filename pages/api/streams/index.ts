@@ -13,6 +13,7 @@ async function handler(
       query: { page = 0, take = 10 },
     } = req;
 
+    const streamsCount = await client.stream.count();
     const streams = await client.stream.findMany({
       take: +take,
       skip: +page * +take,
@@ -25,8 +26,12 @@ async function handler(
           },
         },
       },
+      orderBy: {
+        id: "desc",
+        // createdAt: "desc",
+      },
     });
-    res.json({ ok: true, streams });
+    res.json({ ok: true, streams, pages: Math.ceil(streamsCount / +take) });
   }
   if (req.method === "POST") {
     const {
