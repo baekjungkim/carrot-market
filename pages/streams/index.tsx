@@ -2,8 +2,9 @@ import type { NextPage } from "next";
 import Link from "next/link";
 import FloatingButton from "@components/floating-button";
 import Layout from "@components/layout";
-import useSWR from "swr";
+import useSWRInfinite, { SWRInfiniteKeyLoader } from "swr/infinite";
 import { Stream, User } from "@prisma/client";
+import Button from "@components/button";
 
 interface StreamWithUser extends Stream {
   user: User;
@@ -14,31 +15,44 @@ interface StreamsResponse {
   streams: StreamWithUser[];
 }
 
+const PAGE_SIZE = 10;
+
 const Streams: NextPage = () => {
-  const { data, error } = useSWR<StreamsResponse>("/api/streams");
-  const isLoading = (!data && !error) || false;
+  const getKey: SWRInfiniteKeyLoader = (pageIndex, previousPageData) => {
+    if (previousPageData && previousPageData.length < PAGE_SIZE) return null; // reached the end
+    return `/api/streams?page=${pageIndex}&take=${PAGE_SIZE}`; // SWR key
+  };
+  const { data, size, setSize, error } =
+    useSWRInfinite<StreamsResponse>(getKey);
+
   return (
     <Layout title="라이브" hasTabBar>
       <div className="space-y-4 divide-y">
-        {data?.streams?.map((stream) => (
-          <Link key={stream.id} href={`/streams/${stream.id}`}>
-            <a className="block px-4  pt-4">
-              <div className="aspect-video w-full rounded-md bg-slate-300 shadow-sm" />
+        {data?.map(({ streams }) => {
+          return streams?.map((stream) => (
+            <Link key={stream.id} href={`/streams/${stream.id}`}>
+              <a className="block px-4  pt-4">
+                <div className="aspect-video w-full rounded-md bg-slate-300 shadow-sm" />
 
-              <div className="mt-2 flex justify-between space-x-3">
-                <h1 className="text-2xl font-bold text-gray-900">
-                  {stream.name}
-                </h1>
-                <div className="flex space-x-3">
-                  <div className="h-8 w-8 rounded-full bg-slate-500" />
-                  <span className="font-medium text-gray-900">
-                    {stream?.user?.name}
-                  </span>
+                <div className="mt-2 flex justify-between space-x-3">
+                  <h1 className="text-2xl font-bold text-gray-900">
+                    {stream.name}
+                  </h1>
+                  <div className="flex space-x-3">
+                    <div className="h-8 w-8 rounded-full bg-slate-500" />
+                    <span className="font-medium text-gray-900">
+                      {stream?.user?.name}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </a>
-          </Link>
-        ))}
+              </a>
+            </Link>
+          ));
+        })}
+
+        <div className="pt-10 pb-2">
+          <Button onClick={() => setSize(size + 1)} text="Load More" />
+        </div>
 
         <FloatingButton href="/streams/create">
           <svg
