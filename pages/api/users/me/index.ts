@@ -27,7 +27,7 @@ async function handler(
   } else if (req.method === "POST") {
     const {
       session: { user },
-      body: { name, email, phone },
+      body: { name, email, phone, avatarId },
     } = req;
 
     if (email) {
@@ -43,15 +43,6 @@ async function handler(
         return res
           .status(409)
           .json({ ok: false, error: "This Email is already in use" });
-
-      await client.user.update({
-        where: {
-          id: user?.id,
-        },
-        data: {
-          email,
-        },
-      });
     }
     if (phone) {
       const alreadyPhone = await client.user.findUnique({
@@ -66,27 +57,19 @@ async function handler(
         return res
           .status(409)
           .json({ ok: false, error: "This Phone number is already in use" });
-
-      await client.user.update({
-        where: {
-          id: user?.id,
-        },
-        data: {
-          phone,
-        },
-      });
     }
 
-    if (name) {
-      await client.user.update({
-        where: {
-          id: user?.id,
-        },
-        data: {
-          name,
-        },
-      });
-    }
+    await client.user.update({
+      where: {
+        id: user?.id,
+      },
+      data: {
+        ...(avatarId ? { avatar: avatarId } : ""),
+        phone,
+        email,
+        name,
+      },
+    });
 
     res.json({ ok: true });
   }

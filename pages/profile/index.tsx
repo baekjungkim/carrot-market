@@ -20,11 +20,19 @@ const Profile: NextPage = () => {
   const { data, error } = useSWR<ReviewsResposne>("/api/users/reviews");
   const isLoading = !data && !error;
 
-  return (
+  https: return (
     <Layout title="프로필" hasTabBar>
       <div className="py-10 px-4">
         <div className="flex items-center space-x-3">
-          <div className="h-16 w-16 rounded-full bg-slate-500" />
+          {user?.avatar ? (
+            <img
+              src={`https://imagedelivery.net/-4c3-zEb4Op0_1qjNCTcBg/${user.avatar}/avatar`}
+              className="h-16 w-16 rounded-full"
+            />
+          ) : (
+            <div className="h-16 w-16 rounded-full bg-slate-500" />
+          )}
+
           <div className="flex flex-col">
             <span className="font-medium text-gray-900">{user?.name}</span>
             <Link href="/profile/edit">

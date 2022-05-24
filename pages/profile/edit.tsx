@@ -40,15 +40,41 @@ const EditProfile: NextPage = () => {
     if (user?.name) setValue("name", user?.name);
     if (user?.email) setValue("email", user?.email);
     if (user?.phone) setValue("phone", user?.phone);
+    if (user?.avatar)
+      setAvatarPreview(
+        `https://imagedelivery.net/-4c3-zEb4Op0_1qjNCTcBg/${user.avatar}/avatar`
+      );
   }, [user, setValue]);
 
   const [editProfile, { data, loading }] =
     useMutation<EditProfileResponse>("/api/users/me");
 
-  const onValid = ({ name, email, phone, avatar }: EditProfileForm) => {
+  const onValid = async ({ name, email, phone, avatar }: EditProfileForm) => {
     if (loading) return;
+    let avatarId;
+    if (avatar && avatar.length > 0) {
+      const { uploadURL } = await (await fetch(`/api/files`)).json();
 
-    editProfile({ name, email, phone: phone + "" });
+      const form = new FormData();
+      form.append("file", avatar[0], user?.id + "");
+
+      const {
+        result: { id },
+      } = await (
+        await fetch(uploadURL, {
+          method: "POST",
+          body: form,
+        })
+      ).json();
+
+      avatarId = id;
+    }
+    editProfile({
+      name,
+      email,
+      phone: phone + "",
+      avatarId,
+    });
   };
 
   useEffect(() => {
@@ -98,7 +124,7 @@ const EditProfile: NextPage = () => {
           register={register("name", {
             required: {
               value: true,
-              message: "Username is Required.",
+              message: "Username is Required",
             },
           })}
           label="Username"
@@ -115,7 +141,7 @@ const EditProfile: NextPage = () => {
             validate: {
               chooseOne: (v) => {
                 if (v !== "" || getValues().phone !== "") {
-                  clearErrors(["email", "phone"]);
+                  clearErrors(["email", "phone", "formErrors"]);
                   return true;
                 } else {
                   return "Email OR Phone numebr are required. You need to choose one.";
@@ -132,7 +158,7 @@ const EditProfile: NextPage = () => {
             validate: {
               chooseOne: (v) => {
                 if (v !== "" || getValues().email !== "") {
-                  clearErrors(["email", "phone"]);
+                  clearErrors(["email", "phone", "formErrors"]);
                   return true;
                 } else {
                   return "Email OR Phone numebr are required. You need to choose one.";
@@ -148,6 +174,11 @@ const EditProfile: NextPage = () => {
         {errors.email ? (
           <span className="my-2 block font-medium text-red-500">
             {errors.email.message}
+          </span>
+        ) : null}
+        {errors.formErrors ? (
+          <span className="my-2 block text-center font-medium text-red-500">
+            {errors.formErrors.message}
           </span>
         ) : null}
 
