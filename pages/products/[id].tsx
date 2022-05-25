@@ -6,7 +6,7 @@ import useSWR, { useSWRConfig } from "swr";
 import { Product, User } from "@prisma/client";
 import Link from "next/link";
 import useMutation from "@libs/client/useMutation";
-import { makeJoinClassname } from "@libs/client/utils";
+import { makeJoinClassname, serveImage } from "@libs/client/utils";
 import useUser from "@libs/client/useUser";
 
 interface ProductWithUser extends Product {
@@ -56,11 +56,18 @@ const ItemDetail: NextPage = () => {
     >
       <div className="px-4 py-4">
         <div className="mb-5">
-          <div
-            className={`h-96 bg-slate-300 ${
-              isDataLoading ? "animate-pulse" : ""
-            }`}
-          />
+          {data?.product?.image ? (
+            <img
+              src={serveImage({ id: data?.product?.image })}
+              className="h-96 w-full"
+            />
+          ) : (
+            <div
+              className={`h-96 bg-slate-300 ${
+                isDataLoading ? "animate-pulse" : ""
+              }`}
+            />
+          )}
           {isDataLoading ? (
             <div className="flex items-center space-x-3 border-b py-3">
               Loading...
@@ -68,11 +75,17 @@ const ItemDetail: NextPage = () => {
           ) : (
             <Link href={`/users/profiles/${data?.product?.user?.id}`}>
               <a className="flex items-center space-x-3 border-b py-3">
-                <div
-                  className={`h-12 w-12 cursor-pointer rounded-full bg-slate-300 ${
-                    isDataLoading ? "animate-pulse" : ""
-                  }`}
-                />
+                {data?.product?.user?.avatar ? (
+                  <img
+                    src={serveImage({
+                      id: data?.product?.user?.avatar,
+                      variant: "avatar",
+                    })}
+                    className="h-12 w-12 cursor-pointer rounded-full"
+                  />
+                ) : (
+                  <div className="h-12 w-12 cursor-pointer rounded-full bg-slate-300" />
+                )}
                 <div className="cursor-pointer ">
                   <p className="font-demidum text-sm text-gray-700">
                     {data?.product?.user?.name}

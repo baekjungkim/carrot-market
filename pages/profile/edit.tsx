@@ -7,7 +7,7 @@ import useUser from "@libs/client/useUser";
 import { useEffect, useState } from "react";
 import useMutation from "@libs/client/useMutation";
 import Router, { useRouter } from "next/router";
-import { makeJoinClassname } from "@libs/client/utils";
+import { bulkUpload, makeJoinClassname, serveImage } from "@libs/client/utils";
 
 interface EditProfileForm {
   avatar?: FileList;
@@ -41,9 +41,7 @@ const EditProfile: NextPage = () => {
     if (user?.email) setValue("email", user?.email);
     if (user?.phone) setValue("phone", user?.phone);
     if (user?.avatar)
-      setAvatarPreview(
-        `https://imagedelivery.net/-4c3-zEb4Op0_1qjNCTcBg/${user.avatar}/avatar`
-      );
+      setAvatarPreview(serveImage({ id: user?.avatar, variant: "avatar" }));
   }, [user, setValue]);
 
   const [editProfile, { data, loading }] =
@@ -53,22 +51,10 @@ const EditProfile: NextPage = () => {
     if (loading) return;
     let avatarId;
     if (avatar && avatar.length > 0) {
-      const { uploadURL } = await (await fetch(`/api/files`)).json();
-
-      const form = new FormData();
-      form.append("file", avatar[0], user?.id + "");
-
-      const {
-        result: { id },
-      } = await (
-        await fetch(uploadURL, {
-          method: "POST",
-          body: form,
-        })
-      ).json();
-
-      avatarId = id;
+      const ids = await bulkUpload({ files: avatar });
+      avatarId = ids[0];
     }
+    console.log(avatarId);
     editProfile({
       name,
       email,

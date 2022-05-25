@@ -4,7 +4,7 @@ import Layout from "@components/layout";
 import useSWR from "swr";
 import { Review, User } from "@prisma/client";
 import useUser from "@libs/client/useUser";
-import { makeJoinClassname } from "@libs/client/utils";
+import { makeJoinClassname, serveImage } from "@libs/client/utils";
 
 interface ReviewWithCreateBy extends Review {
   createdBy: User;
@@ -26,7 +26,7 @@ const Profile: NextPage = () => {
         <div className="flex items-center space-x-3">
           {user?.avatar ? (
             <img
-              src={`https://imagedelivery.net/-4c3-zEb4Op0_1qjNCTcBg/${user.avatar}/avatar`}
+              src={serveImage({ id: user.avatar, variant: "avatar" })}
               className="h-16 w-16 rounded-full"
             />
           ) : (
