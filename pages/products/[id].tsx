@@ -8,6 +8,7 @@ import Link from "next/link";
 import useMutation from "@libs/client/useMutation";
 import { makeJoinClassname, serveImage } from "@libs/client/utils";
 import useUser from "@libs/client/useUser";
+import Image from "next/image";
 
 interface ProductWithUser extends Product {
   user: User;
@@ -56,47 +57,52 @@ const ItemDetail: NextPage = () => {
     >
       <div className="px-4 py-4">
         <div className="mb-5">
-          {data?.product?.image ? (
-            <img
-              src={serveImage({ id: data?.product?.image })}
-              className="h-96 w-full"
+          {/* {data?.product?.image ? ( */}
+          <div className="relative pb-80">
+            <Image
+              src={serveImage({ id: data?.product?.image! })}
+              className="object-left"
+              layout="fill"
+              placeholder="blur"
+              blurDataURL="https://i.ibb.co/ByhpsFY/blur.png"
+              alt={`${data?.product?.name} image`}
             />
-          ) : (
+          </div>
+          {/* ) : (
             <div
               className={`h-96 bg-slate-300 ${
                 isDataLoading ? "animate-pulse" : ""
               }`}
             />
-          )}
-          {isDataLoading ? (
-            <div className="flex items-center space-x-3 border-b py-3">
-              Loading...
-            </div>
-          ) : (
-            <Link href={`/users/profiles/${data?.product?.user?.id}`}>
-              <a className="flex items-center space-x-3 border-b py-3">
-                {data?.product?.user?.avatar ? (
-                  <img
-                    src={serveImage({
-                      id: data?.product?.user?.avatar,
-                      variant: "avatar",
-                    })}
-                    className="h-12 w-12 cursor-pointer rounded-full"
-                  />
-                ) : (
-                  <div className="h-12 w-12 cursor-pointer rounded-full bg-slate-300" />
-                )}
-                <div className="cursor-pointer ">
-                  <p className="font-demidum text-sm text-gray-700">
-                    {data?.product?.user?.name}
-                  </p>
-                  <p className="text-xs font-medium text-gray-500">
-                    View profile &rarr;
-                  </p>
-                </div>
-              </a>
-            </Link>
-          )}
+          )} */}
+          <Link href={`/users/profiles/${data?.product?.user?.id}`}>
+            <a className="flex items-center space-x-3 border-b py-3">
+              {data?.product?.user?.avatar ? (
+                <Image
+                  width={48}
+                  height={48}
+                  src={serveImage({
+                    id: data?.product?.user?.avatar,
+                    variant: "avatar",
+                  })}
+                  placeholder="blur"
+                  blurDataURL="https://i.ibb.co/ByhpsFY/blur.png"
+                  className="h-12 w-12 cursor-pointer rounded-full object-fill"
+                  alt={`${data?.product?.user?.name} avatar`}
+                />
+              ) : (
+                <div className="h-12 w-12 cursor-pointer rounded-full bg-slate-300" />
+              )}
+              <div className="cursor-pointer ">
+                <p className="font-demidum text-sm text-gray-700">
+                  {data?.product?.user?.name}
+                </p>
+                <p className="text-xs font-medium text-gray-500">
+                  View profile &rarr;
+                </p>
+              </div>
+            </a>
+          </Link>
           <div className="mt-5">
             {isDataLoading ? (
               <h1 className="my-6 text-3xl font-bold text-gray-900">
