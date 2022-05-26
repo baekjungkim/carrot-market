@@ -17,7 +17,15 @@ async function handler(
     const streams = await client.stream.findMany({
       take: +take,
       skip: +page * +take,
-      include: {
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        price: true,
+        userId: true,
+        cloudflareId: true,
+        createdAt: true,
+        updatedAt: true,
         user: {
           select: {
             id: true,
@@ -30,7 +38,31 @@ async function handler(
         createdAt: "desc",
       },
     });
-    res.json({ ok: true, streams, pages: Math.ceil(streamsCount / +take) });
+
+    const streamLifeCycle = async (cloudflareId: string) => {
+      const { live } = await (
+        await fetch(`https://videodelivery.net/${cloudflareId}/lifecycle`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${process.env.CLOUDFLARE_STREAM_API_TOKEN}`,
+          },
+        })
+      ).json();
+
+      return live;
+    };
+
+    let streamsWithLifeCycle = [];
+    for (const stream of streams) {
+      const isLive = await streamLifeCycle(stream.cloudflareId);
+      streamsWithLifeCycle.push({ ...stream, isLive });
+    }
+
+    res.json({
+      ok: true,
+      streams: streamsWithLifeCycle,
+      pages: Math.ceil(streamsCount / +take),
+    });
   }
   if (req.method === "POST") {
     const {
