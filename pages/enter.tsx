@@ -1,12 +1,20 @@
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Button from "@components/button";
 import Input from "@components/input";
 import Layout from "@components/layout";
 import useMutation from "@libs/client/useMutation";
 import { makeJoinClassname } from "@libs/client/utils";
-import Router, { useRouter } from "next/router";
-import { isRegularExpressionLiteral } from "typescript";
+import { useRouter } from "next/router";
+import dynamic from "next/dynamic";
+
+const Hello = dynamic(
+  () =>
+    new Promise((resolve) =>
+      setTimeout(() => resolve(import("@components/hello")), 10000)
+    ),
+  { ssr: false, suspense: true }
+);
 
 interface EnterForm {
   email?: string;
@@ -120,14 +128,19 @@ export default function Enter() {
                   />
                 ) : null}
                 {method === "phone" ? (
-                  <Input
-                    register={register("phone", { required: true })}
-                    name="phone"
-                    label="Phone number"
-                    type="number"
-                    kind="phone"
-                    required
-                  />
+                  <>
+                    <Suspense fallback={<span>Loading big component</span>}>
+                      <Hello />
+                    </Suspense>
+                    <Input
+                      register={register("phone", { required: true })}
+                      name="phone"
+                      label="Phone number"
+                      type="number"
+                      kind="phone"
+                      required
+                    />
+                  </>
                 ) : null}
                 {method === "email" ? (
                   <Button loading={loading} text="Get login link" />
