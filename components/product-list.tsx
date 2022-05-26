@@ -27,6 +27,7 @@ const ProductList = ({ kind }: ProductListProps) => {
           id={record.product.id}
           title={record.product.name}
           price={record.product.price}
+          image={record.product.image}
           comments={1}
           hearts={record.product.records.length}
         />

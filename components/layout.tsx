@@ -2,12 +2,14 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { makeJoinClassname } from "@libs/client/utils";
+import Head from "next/head";
 
 interface LayoutProps {
   title?: string;
   isGoBack?: boolean;
   hasTabBar?: boolean;
   children: React.ReactNode;
+  seoTitle?: String;
 }
 
 export default function Layout({
@@ -15,6 +17,7 @@ export default function Layout({
   isGoBack,
   hasTabBar,
   children,
+  seoTitle,
 }: LayoutProps) {
   const router = useRouter();
   const onGoBackClick = () => {
@@ -23,6 +26,9 @@ export default function Layout({
 
   return (
     <div>
+      <Head>
+        <title>{seoTitle ? `${seoTitle} |` : ""} Carrot Market</title>
+      </Head>
       <div className="fixed top-0 flex w-full max-w-xl items-center  justify-between border-b bg-white px-5 py-3 text-lg font-medium text-gray-800">
         {isGoBack ? (
           <button onClick={onGoBackClick}>

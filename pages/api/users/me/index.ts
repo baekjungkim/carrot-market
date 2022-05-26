@@ -18,6 +18,11 @@ async function handler(
             postId: true,
           },
         },
+        answers: {
+          select: {
+            postId: true,
+          },
+        },
       },
     });
     res.json({

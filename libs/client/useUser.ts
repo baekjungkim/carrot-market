@@ -1,9 +1,18 @@
 import { User } from "@prisma/client";
 import useSWR from "swr";
 
+interface UserWithCuriosityAndAnswers extends User {
+  curiosities: {
+    postId: number;
+  }[];
+  answers: {
+    postId: number;
+  }[];
+}
+
 interface ProfileResponse {
   ok: boolean;
-  profile: User;
+  profile: UserWithCuriosityAndAnswers;
 }
 
 export default function useUser() {

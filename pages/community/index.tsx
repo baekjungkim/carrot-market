@@ -58,7 +58,7 @@ const Community: NextPage = () => {
                       ?.map((curiosity) =>
                         curiosity.postId === post.id ? "text-orange-500" : ""
                       )
-                      .toString() || "ㅂ"
+                      .toString() || ""
                   )}
                 >
                   <svg
