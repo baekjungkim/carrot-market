@@ -5,34 +5,29 @@ export interface ResponseType {
   [key: string]: any;
 }
 
-type Method = "GET" | "POST" | "DELETE";
+type method = "GET" | "POST" | "DELETE";
 
 interface ConfigType {
-  methods: Method[];
+  methods: method[];
   handler: (req: NextApiRequest, res: NextApiResponse) => void;
   isPrivate?: boolean;
 }
 
 export default function withHandler({
   methods,
-  handler,
   isPrivate = true,
+  handler,
 }: ConfigType) {
   return async function (
     req: NextApiRequest,
     res: NextApiResponse
   ): Promise<any> {
-    if (!req.method || !methods.includes(req.method as any)) {
+    if (req.method && !methods.includes(req.method as any)) {
       return res.status(405).end();
     }
-
     if (isPrivate && !req.session.user) {
-      res.status(401).json({
-        ok: false,
-        error: "Please Login",
-      });
+      return res.status(401).json({ ok: false, error: "Plz log in." });
     }
-
     try {
       await handler(req, res);
     } catch (error) {

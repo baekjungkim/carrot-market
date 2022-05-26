@@ -1,29 +1,22 @@
-import { Curiosity, User } from "@prisma/client";
-import { passThroughSymbol } from "next/dist/server/web/spec-compliant/fetch-event";
+import { User } from "@prisma/client";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import useSWR from "swr";
 
-interface UserWithCuriosities extends User {
-  curiosities: Curiosity[];
-}
-interface UserResponse {
+interface ProfileResponse {
   ok: boolean;
-  profile: UserWithCuriosities;
+  profile: User;
 }
 
-interface UseUserProps {
-  publicRoute?: string[];
-}
-
-export default function useUser({ publicRoute }: UseUserProps) {
-  const { data, error } = useSWR<UserResponse>("/api/users/me");
+export default function useUser() {
+  const { data, error } = useSWR<ProfileResponse>(
+    typeof window === "undefined" ? null : "/api/users/me"
+  );
   const router = useRouter();
   useEffect(() => {
-    if (data && !data.ok && !publicRoute?.includes(router.pathname)) {
+    if (data && !data.ok) {
       router.replace("/enter");
     }
-  }, [data, router, publicRoute]);
-
+  }, [data, router]);
   return { user: data?.profile, isLoading: !data && !error };
 }

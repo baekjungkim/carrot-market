@@ -7,8 +7,6 @@ import NProgress from "nprogress";
 import { useEffect } from "react";
 
 function MyApp({ Component, pageProps }: AppProps) {
-  const {} = useUser({ publicRoute: ["/enter"] });
-
   useEffect(() => {
     const start = () => {
       NProgress.start();

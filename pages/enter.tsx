@@ -6,6 +6,7 @@ import Layout from "@components/layout";
 import useMutation from "@libs/client/useMutation";
 import { makeJoinClassname } from "@libs/client/utils";
 import Router, { useRouter } from "next/router";
+import { isRegularExpressionLiteral } from "typescript";
 
 interface EnterForm {
   email?: string;
@@ -50,7 +51,7 @@ export default function Enter() {
 
   const router = useRouter();
   useEffect(() => {
-    if (tokenData?.ok) {
+    if (tokenData && tokenData.ok) {
       router.push("/");
     }
   }, [tokenData, router]);

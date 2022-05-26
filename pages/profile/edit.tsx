@@ -24,7 +24,7 @@ interface EditProfileResponse {
 
 const EditProfile: NextPage = () => {
   const router = useRouter();
-  const { user } = useUser({});
+  const { user } = useUser();
   const {
     register,
     handleSubmit,

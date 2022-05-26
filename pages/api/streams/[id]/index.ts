@@ -2,6 +2,8 @@ import { NextApiRequest, NextApiResponse } from "next";
 import withHandler, { ResponseType } from "@libs/server/withHandler";
 import client from "@libs/server/client";
 import { withApiSession } from "@libs/server/withSession";
+import { userInfo } from "os";
+import streams from "pages/api/streams";
 
 async function handler(
   req: NextApiRequest,
@@ -9,6 +11,7 @@ async function handler(
 ) {
   const {
     query: { id },
+    session: { user },
   } = req;
   const stream = await client.stream.findUnique({
     where: {
@@ -39,6 +42,12 @@ async function handler(
 
   if (!stream)
     return res.status(404).json({ ok: false, error: "Not found Stream" });
+
+  const isOwner = stream.userId === user?.id;
+  if (!isOwner) {
+    stream.cloudflareKey = "";
+    stream.cloudflareUrl = "";
+  }
 
   res.json({ ok: true, stream });
 }
